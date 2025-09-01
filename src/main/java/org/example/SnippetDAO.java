@@ -27,11 +27,11 @@ public class SnippetDAO {
         }
     }
 
-    public void delete(Snippet snippet) {
+    public void delete(int id) {
         String sql = "DELETE FROM snippets WHERE id = ?";
         try(Connection conn = dbManager.getConnection();
             PreparedStatement ps = conn.prepareStatement(sql)){
-            ps.setLong(1, snippet.getId());
+            ps.setLong(1, id);
             ps.executeUpdate();
         } catch(SQLException e){
             e.printStackTrace();
