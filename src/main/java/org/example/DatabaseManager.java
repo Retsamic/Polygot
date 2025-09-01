@@ -4,16 +4,16 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseManager {
-        private final String dbUrl;
-        private final String dbUser;
-        private final String dbPass;
+        private static  String dbUrl;
+        private static String dbUser;
+        private static String dbPass;
 
         private static DatabaseManager instance;
 
         private DatabaseManager() {
-            this.dbUrl = ConfigLoader.getDbUrl();
-            this.dbUser = ConfigLoader.getDbUser();
-            this.dbPass = ConfigLoader.getDbPassword();
+            dbUrl = ConfigLoader.getDbUrl();
+            dbUser = ConfigLoader.getDbUser();
+            dbPass = ConfigLoader.getDbPassword();
         }
 
         public static DatabaseManager getInstance() {

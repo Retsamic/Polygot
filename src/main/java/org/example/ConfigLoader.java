@@ -21,7 +21,7 @@ public class ConfigLoader {
     }
 
     public static String getDbUser(){
-        String envVarName = prop.getProperty("database.user");
+        String envVarName = prop.getProperty("database.username");
         return System.getenv(envVarName);
     }
 
