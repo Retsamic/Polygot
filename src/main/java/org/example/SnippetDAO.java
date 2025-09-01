@@ -9,7 +9,7 @@ public class SnippetDAO {
         this.dbManager = dbManager;
     }
 
-    public void save(Snippet snippet) {
+    public void createNote(Snippet snippet) {
 
         String sql = "INSERT INTO snippets(title, language, code_body, notes, created_at) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = dbManager.getConnection();
