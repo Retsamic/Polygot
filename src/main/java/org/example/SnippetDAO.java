@@ -48,6 +48,7 @@ public class SnippetDAO {
 
             while(rs.next()) {
                 Snippet snippet = new Snippet();
+                snippet.setId(rs.getInt("id"));
                 snippet.setTitle(rs.getString("title"));
                 snippet.setLanguage(rs.getString("language"));
                 snippet.setCode_body(rs.getString("code_body"));
@@ -87,4 +88,23 @@ public class SnippetDAO {
         }
         return snippet;
     }
+
+    public void updateSnippet(Snippet snippet){
+        String sql = "UPDATE snippets SET title = ?, language = ?, code_body = ?, notes= ? WHERE id = ?";
+        try(Connection conn = dbManager.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)){
+            ps.setString(1,snippet.getTitle());
+            ps.setString(2, snippet.getLanguage());
+            ps.setString(3, snippet.getCode_body());
+            ps.setString(4, snippet.getNotes());
+            ps.setInt(5,snippet.getId());
+            ps.executeUpdate();
+        } catch(SQLException e){
+            e.printStackTrace();
+
+        }
+
+
+    }
+
 }
