@@ -16,7 +16,9 @@ public class Main {
         System.out.println("3. Find a snippet by ID");
         System.out.println("4. Update Snippet");
         System.out.println("5. Delete Snippet");
-        System.out.println("6. Exit");
+        System.out.println("6. Manage tags for a snippet");
+        System.out.println("7. Find snippets by tag");
+        System.out.println("8. Exit");
         System.out.print("Choose an option: ");
     }
     private static void addNewSnippet() {
