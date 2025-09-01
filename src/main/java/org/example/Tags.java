@@ -11,8 +11,8 @@ public class Tags {
     }
 
     public int getId(){return this.id;}
-    public int setId(int id){return this.id = id;}
+    public void setId(int id){ this.id = id;}
     public String getName(){return this.name;}
-    public String setName(String name){return this.name = name;}
+    public void setName(String name){ this.name = name;}
 
 }
