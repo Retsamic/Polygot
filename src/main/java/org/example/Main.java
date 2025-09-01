@@ -1,5 +1,4 @@
 package org.example;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Scanner;
 
@@ -108,11 +107,75 @@ public class Main {
         System.out.println("Snippet with ID " + id + " deleted.");
     }
 
+    private static void manageTagsForSnippet() {
+        System.out.print("Enter the ID of the snippet to manage tags for: ");
+        int snippetId = Integer.parseInt(scanner.nextLine());
+        Snippet snippet = snippetDAO.findById(snippetId);
+
+        if (snippet == null) {
+            System.out.println("Snippet not found.");
+            return;
+        }
+
+        System.out.println("\nCurrent tags for snippet '" + snippet.getTitle() + "':");
+        List<Tags> currentTags = snippetTagDAO.findTagsForSnippets(snippetId);
+        if (currentTags.isEmpty()) {
+            System.out.println(" (None)");
+        } else {
+            for (Tags tag : currentTags) {
+                System.out.println(" - " + tag.getName());
+            }
+        }
+
+        System.out.println("\n1. Add a tag");
+        System.out.println("2. Return to main menu");
+        System.out.print("Choose an option: ");
+        int choice = Integer.parseInt(scanner.nextLine());
+
+        if (choice == 1) {
+            System.out.print("Enter tag name to add (e.g., 'java', 'sql'): ");
+            String tagName = scanner.nextLine();
+
+            Tags tag = tagsDAO.findByName(tagName);
+            if (tag == null) {
+                tag = new Tags();
+                tag.setName(tagName);
+                tagsDAO.createTag(tag);
+
+                tag = tagsDAO.findByName(tagName);
+                System.out.println("Created new tag: '" + tagName + "'");
+            }
+            snippetTagDAO.addTagToSnippet(snippetId, tag.getId());
+            System.out.println("Successfully tagged snippet with '" + tagName + "'!");
+        }
+    }
+
+    private static void findSnippetsByTag(){
+        System.out.println("Enter tag name to search for (e.g., 'java'):");
+        String tagName = scanner.nextLine().trim().toLowerCase();
+        Tags tag = tagsDAO.findByName(tagName);
+
+        if(tag == null){
+            System.out.println("Tag '" + tagName + "' does not exist.");
+        }
+        List<Snippet> snippets = snippetTagDAO.findSnippetsForTags(tag.getId());
+        if(snippets.isEmpty()){
+            System.out.println("No snippets found with the tag '" + tagName + "'.");
+        }
+
+        System.out.println("\nSnippets tagged with '" + tagName + "':");
+        for (Snippet snippet : snippets){
+            System.out.println(snippet.toString());
+        }
+
+    }
+
     public static void main(String[] args) {
         boolean running = true;
         while (running) {
             printMenu();
             int choice = scanner.nextInt();
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
@@ -131,8 +194,14 @@ public class Main {
                     deleteSnippet();
                     break;
                 case 6:
+                    manageTagsForSnippet();
+                    break;
+                case 7:
+                    findSnippetsByTag();
+                    break;
+                case 8:
                     running = false;
-                    System.out.println("Goodbye");
+                    break;
                 default:
                     System.out.println("Invalid option, please try again.");
             }
