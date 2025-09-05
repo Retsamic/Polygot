@@ -70,6 +70,25 @@ public class Main {
         }
     }
 
+    private static void findSnippetByName(){
+        System.out.print("Enter snippet name to find: ");
+        String name = scanner.nextLine();
+        Snippet snippet = snippetDAO.findByName(name);
+
+        if (snippet != null){
+            System.out.println("ID: " + snippet.getId());
+            System.out.println("Title: " + snippet.getTitle());
+            System.out.println("Language: " + snippet.getLanguage());
+            System.out.println("Code: \n" + snippet.getCode_body());
+            System.out.println("Notes: \n" + snippet.getNotes());
+            System.out.println("Created At: " + snippet.getCreated_at());
+        } else {
+            System.out.println("No snippet with that name found.");
+        }
+
+
+    }
+
     private static void updateSnippet(){
         System.out.print("Enter snippet ID to update: ");
         int id = Integer.parseInt(scanner.nextLine());

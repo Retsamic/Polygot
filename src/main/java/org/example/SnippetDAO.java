@@ -38,6 +38,31 @@ public class SnippetDAO {
         }
     }
 
+    public Snippet findByName(String name){
+        String sql = "SELECT * FROM Snippets WHERE title LIKE ?;";
+        Snippet snippets = null;
+        try(Connection conn = dbManager.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)){
+            ps.setString(1,name + '%');
+
+            try(ResultSet rs = ps.executeQuery()){
+                if(rs.next()){
+                    snippets = new Snippet();
+                    snippets.setTitle(rs.getString("title"));
+                    snippets.setLanguage(rs.getString("language"));
+                    snippets.setCode_body(rs.getString("code_body"));
+                    snippets.setNotes(rs.getString("notes"));
+                    snippets.setCreated_at(rs.getTimestamp("created_at"));
+                }
+            }
+
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+        return snippets;
+    }
+
+
     public List<Snippet> findAll() {
         List<Snippet> snippets = new ArrayList<>();
         String sql = "SELECT * FROM snippets";

@@ -20,6 +20,10 @@ public class SnippetTagDAO {
         }
     }
 
+    public void deleteTagFromSnippet(int snippetId, int tagId){
+
+    }
+
     public List<Snippet> findSnippetsForTags(int tagId){
         List<Snippet> snippets = new ArrayList<>();
         String sql = "SELECT s.* FROM snippets s JOIN snippet_tags st ON s.id = st.snippet_id WHERE st.tag_id = ?;";
