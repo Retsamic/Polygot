@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Main {
     private static final DatabaseManager dbManager = DatabaseManager.getInstance();
-    private static final SnippetDAO snippetDAO = new SnippetDAO(dbManager);
+    private static final SnippetDAOJdbc snippetDAO = new SnippetDAOJdbc(dbManager);
     private static final TagsDAO tagsDAO = new TagsDAO(dbManager);
     private static final SnippetTagDAO snippetTagDAO = new SnippetTagDAO(dbManager);
     private static final Scanner scanner = new Scanner(System.in);

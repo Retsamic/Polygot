@@ -1,13 +1,14 @@
 package org.example;
 import java.sql.*;
-import java.util.*;
+import java.util.*;import java.util.*;
 
-public class SnippetDAO {
+public class SnippetDAOJdbc implements ISnippetDao {
     private final DatabaseManager dbManager;
 
-    public SnippetDAO(DatabaseManager dbManager) {
+    public SnippetDAOJdbc(DatabaseManager dbManager) {
         this.dbManager = dbManager;
     }
+
 
     public void createNote(Snippet snippet) {
 
@@ -73,12 +74,7 @@ public class SnippetDAO {
 
             while(rs.next()) {
                 Snippet snippet = new Snippet();
-                snippet.setId(rs.getInt("id"));
-                snippet.setTitle(rs.getString("title"));
-                snippet.setLanguage(rs.getString("language"));
-                snippet.setCode_body(rs.getString("code_body"));
-                snippet.setNotes(rs.getString("notes"));
-                snippet.setCreated_at(rs.getTimestamp("created_at"));
+                addToSnippet(snippet, rs);
                 snippets.add(snippet);
             }
         } catch(SQLException e){
@@ -99,12 +95,7 @@ public class SnippetDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     snippet = new Snippet();
-                    snippet.setId(rs.getInt("id"));
-                    snippet.setTitle(rs.getString("title"));
-                    snippet.setLanguage(rs.getString("language"));
-                    snippet.setCode_body(rs.getString("code_body"));
-                    snippet.setNotes(rs.getString("notes"));
-                    snippet.setCreated_at(rs.getTimestamp("created_at"));
+                    addToSnippet(snippet, rs);
                 }
             }
 
@@ -112,6 +103,15 @@ public class SnippetDAO {
             e.printStackTrace();
         }
         return snippet;
+    }
+
+    public void addToSnippet(Snippet snippet, ResultSet rs) throws SQLException {
+        snippet.setId(rs.getInt("id"));
+        snippet.setTitle(rs.getString("title"));
+        snippet.setLanguage(rs.getString("language"));
+        snippet.setCode_body(rs.getString("code_body"));
+        snippet.setNotes(rs.getString("notes"));
+        snippet.setCreated_at(rs.getTimestamp("created_at"));
     }
 
     public void updateSnippet(Snippet snippet){
