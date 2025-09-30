@@ -1,44 +1,63 @@
 package org.example;
-import io.javalin.Javalin;
-import io.javalin.http.Context;
+
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.sql.SQLClientInfoException;
-import java.sql.SQLException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
+@RestController
+@RequestMapping("/snippets")
 public class SnippetController {
-    SnippetService snippetService = new SnippetService();
-    SnippetDAOJdbc snippetDAOJdbc = new SnippetDAOJdbc(null);
 
-    public Javalin startAPI(){
-    Javalin app = Javalin.create();
-    app.get("/snippet", this::getAllSnippets);
-    app.get("/snippet/{snippet_id}", this::getSnippet);
-    app.post("/snippet", this::createSnippet);
-    app.delete("/snippet/{snippet_id}", this::getSnippet);
-    app.patch("/snippet/{snippet_id}", this::updateSnippet);
+    private final SnippetDao snippetDAO;
+    private final TagsDAO tagsDAO;
+    private final SnippetTagDAO snippetTagDAO;
 
-
-    return app;
+    public SnippetController(SnippetDao snippetDAO, TagsDAO tagsDAO, SnippetTagDAO snippetTagDAO) {
+        this.snippetDAO = snippetDAO;
+        this.tagsDAO = tagsDAO;
+        this.snippetTagDAO = snippetTagDAO;
     }
 
-    private void getAllSnippets(Context ctx) throws SQLException {
-        List <Snippet> snippet =
+    @GetMapping
+    public List<Snippet> getAllSnippets() {
+        return snippetDAO.findAll();
     }
 
-    private void getSnippet(Context ctx) {
-
+    @GetMapping("/{id}")
+    public Snippet getSnippetById(@PathVariable int id) {
+        return snippetDAO.findById(id);
     }
 
-    private void createSnippet(Context ctx) {
-
+    @PostMapping
+    public void createSnippet(@RequestBody Snippet snippet) {
+        snippetDAO.createSnippet(snippet);
     }
 
-    private void deleteSnippet(Context ctx) {
-
+    @PutMapping("/{id}")
+    public void updateSnippet(@PathVariable int id, @RequestBody Snippet snippet) {
+        snippet.setId(id);
+        snippetDAO.updateSnippet(snippet);
     }
 
-    private void updateSnippet(Context ctx) {
-
+    @DeleteMapping("/{id}")
+    public void deleteSnippet(@PathVariable int id) {
+        snippetDAO.delete(id);
     }
+
+    @GetMapping("/{snippetId}/tags")
+    public List<Tags> getTagsForSnippet(@PathVariable int snippetId) {
+        return snippetTagDAO.findTagsForSnippets(snippetId);
+    }
+
+    @PostMapping("/{snippetId}/tags")
+    public void addTagToSnippet(@PathVariable int snippetId, @RequestBody Tags tag) {
+        Tags existingTag = tagsDAO.findByName(tag.getName());
+        if (existingTag == null) {
+            tagsDAO.createTag(tag);
+            existingTag = tagsDAO.findByName(tag.getName());
+        }
+        snippetTagDAO.addTagToSnippet(snippetId, existingTag.getId());
+    }
+
+
 }

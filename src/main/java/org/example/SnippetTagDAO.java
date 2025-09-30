@@ -1,73 +1,61 @@
 package org.example;
-import java.sql.*;
-import java.util.*;
 
-public class SnippetTagDAO {
-    private final DatabaseManager dbManager;
-    public SnippetTagDAO(DatabaseManager dbManager) {
-        this.dbManager = dbManager;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+@Repository
+public class SnippetTagDAO implements ISnippetTagDao{
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public SnippetTagDAO(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void addTagToSnippet(int snippetId, int tagId){
-        String sql = "INSERT INTO snippet_tags(snippet_id, tag_id) VALUES (?,?);";
-        try(Connection conn = dbManager.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql)){
-            ps.setInt(1, snippetId);
-            ps.setInt(2, tagId);
-            ps.executeUpdate();
-        } catch(SQLException e){
-            e.printStackTrace();
-        }
+    @Override
+    public void addTagToSnippet(int snippetId, int tagId) {
+        String sql = "INSERT INTO snippet_tags(snippet_id, tag_id) VALUES (?,?)";
+        jdbcTemplate.update(sql, snippetId, tagId);
     }
 
-    public void deleteTagFromSnippet(int snippetId, int tagId){
-
+    @Override
+    public void deleteTagFromSnippet(int snippetId, int tagId) {
+        String sql = "DELETE FROM snippet_tags WHERE snippet_id = ? AND tag_id = ?";
+        jdbcTemplate.update(sql, snippetId, tagId);
     }
 
-    public List<Snippet> findSnippetsForTags(int tagId){
-        List<Snippet> snippets = new ArrayList<>();
-        String sql = "SELECT s.* FROM snippets s JOIN snippet_tags st ON s.id = st.snippet_id WHERE st.tag_id = ?;";
-        try(Connection conn = dbManager.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql)){
-            ps.setInt(1, tagId);
-
-            try(ResultSet rs = ps.executeQuery()){
-                while(rs.next()){
-                    Snippet snippet = new Snippet();
-                    snippet.setId(rs.getInt("id"));
-                    snippet.setTitle((rs.getString("title")));
-                    snippet.setLanguage(rs.getString("language"));
-                    snippet.setCode_body(rs.getString("code_body"));
-                    snippet.setNotes(rs.getString("notes"));
-                    snippet.setCreated_at(rs.getTimestamp("created_at"));
-                    snippets.add(snippet);
-                }
-            }
-        } catch(SQLException e){
-            e.printStackTrace();
-        }
-        return snippets;
+    @Override
+    public List<Snippet> findSnippetsForTags(int tagId) {
+        String sql = "SELECT s.* FROM snippets s JOIN snippet_tags st ON s.id = st.snippet_id WHERE st.tag_id = ?";
+        return jdbcTemplate.query(sql, new Object[]{tagId}, (rs, rowNum) -> toSnippet(rs));
     }
 
-    public List<Tags> findTagsForSnippets(int snippetId){
-        List<Tags> tags = new ArrayList<>();
-        String sql = "SELECT t.* FROM tags t JOIN snippet_tags st ON t.id = st.tag_id WHERE st.snippet_id = ?;";
-        try(Connection conn = dbManager.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql)){
-            ps.setInt(1, snippetId);
-            try(ResultSet rs = ps.executeQuery()){
-                while(rs.next()){
-                    Tags tag = new Tags();
-                    tag.setName(rs.getString("name"));
-                    tag.setId(rs.getInt("id"));
-                    tags.add(tag);
-                }
-            }
-        } catch(SQLException e){
-            e.printStackTrace();
-        }
-
-        return tags;
+    @Override
+    public List<Tags> findTagsForSnippets(int snippetId) {
+        String sql = "SELECT t.* FROM tags t JOIN snippet_tags st ON t.id = st.tag_id WHERE st.snippet_id = ?";
+        return jdbcTemplate.query(sql, new Object[]{snippetId}, (rs, rowNum) -> toTags(rs));
     }
 
+
+    private Snippet toSnippet(ResultSet rs) throws SQLException {
+        Snippet snippet = new Snippet();
+        snippet.setId(rs.getInt("id"));
+        snippet.setTitle((rs.getString("title")));
+        snippet.setLanguage(rs.getString("language"));
+        snippet.setCode_body(rs.getString("code_body"));
+        snippet.setNotes(rs.getString("notes"));
+        snippet.setCreated_at(rs.getTimestamp("created_at"));
+        return snippet;
+    }
+
+    private Tags toTags(ResultSet rs) throws SQLException {
+        Tags tag = new Tags();
+        tag.setName(rs.getString("name"));
+        tag.setId(rs.getInt("id"));
+        return tag;
+    }
 }

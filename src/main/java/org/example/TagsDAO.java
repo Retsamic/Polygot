@@ -1,84 +1,55 @@
 package org.example;
-import java.sql.*;
 
-public class TagsDAO {
-    private final DatabaseManager dbManager;
-    public TagsDAO(DatabaseManager dbManager){ this.dbManager = dbManager;}
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
-    public void createTag(Tags tag){
-        String sql = "INSERT INTO tags (name) VALUES(?);";
-        try(Connection conn = dbManager.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql)){
-            ps.setString(1, tag.getName());
-            ps.executeUpdate();
-        } catch(SQLException e){
-            e.printStackTrace();
-        }
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+@Repository
+public class TagsDAO implements ITagsDao{
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public TagsDAO(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Tags findByName(String name){
-        Tags tags = null;
+    @Override
+    public void createTag(Tags tag) {
+        String sql = "INSERT INTO tags (name) VALUES(?)";
+        jdbcTemplate.update(sql, tag.getName());
+    }
+
+    @Override
+    public Tags findByName(String name) {
         String sql = "SELECT * FROM tags WHERE name = ?";
-
-        try(Connection conn = dbManager.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql);){
-            ps.setString(1,name);
-
-            try(ResultSet rs = ps.executeQuery()){
-                if(rs.next()){
-                    tags = new Tags();
-                    tags.setId((rs.getInt("id")));
-                    tags.setName(rs.getString("name"));
-                }
-            }
-        } catch(SQLException e){
-            e.printStackTrace();
-        }
-        return tags;
+        return jdbcTemplate.queryForObject(sql, new Object[]{name}, (rs, rowNum) -> toTags(rs));
     }
 
-    public Tags findById(int id){
-        Tags tags = null;
+    @Override
+    public Tags findById(int id) {
         String sql = "SELECT * FROM tags WHERE id = ?";
-
-        try(Connection conn = dbManager.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql);){
-            ps.setInt(1,id);
-
-            try(ResultSet rs = ps.executeQuery()){
-                if(rs.next()){
-                    tags = new Tags();
-                    tags.setId((rs.getInt("id")));
-                    tags.setName(rs.getString("name"));
-                }
-            }
-        } catch(SQLException e){
-            e.printStackTrace();
-        }
-        return tags;
+        return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) -> toTags(rs));
     }
 
-    public void removeTag(int id){
-        String sql = "DELETE FROM tags WHERE id = ?;";
-        try(Connection conn = dbManager.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql)){
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        } catch(SQLException e){
-            e.printStackTrace();
-        }
-
+    @Override
+    public void removeTag(int id) {
+        String sql = "DELETE FROM tags WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
-    public void updatetag(Tags tag){
-        String sql = "UPDATE tags SET name = ? WHERE id = ?;";
-        try(Connection conn = dbManager.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql)){
-            ps.setString(1, tag.getName());
-            ps.setInt(2, tag.getId());
-            ps.executeUpdate();
-        } catch(SQLException e){
-            e.printStackTrace();
-        }
+    @Override
+    public void updateTag(Tags tag) {
+        String sql = "UPDATE tags SET name = ? WHERE id = ?";
+        jdbcTemplate.update(sql, tag.getName(), tag.getId());
+    }
+
+
+    private Tags toTags(ResultSet rs) throws SQLException {
+        Tags tag = new Tags();
+        tag.setId((rs.getInt("id")));
+        tag.setName(rs.getString("name"));
+        return tag;
     }
 }
