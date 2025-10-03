@@ -1,71 +1,39 @@
 package org.example;
 
-import java.sql.Timestamp;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Entity
 public class Snippet {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String title;
     private String language;
-    private String code_body;
+
+    @Column(columnDefinition = "TEXT")
+    private String codeBody;
+
     private String notes;
-    private Timestamp created_at;
+    private Timestamp createdAt;
 
-    public Snippet() {}
-
-    public Snippet(int id, String title, String language, String code_body, String notes, Timestamp created_at) {
-        this.id = id;
-        this.title = title;
-        this.language = language;
-        this.code_body = code_body;
-        this.notes = notes;
-        this.created_at = created_at;
-    }
-
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
-    public String getTitle() {
-        return title;
-    }
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    public String getLanguage() {
-        return language;
-    }
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-    public String getCode_body() {
-        return code_body;
-    }
-    public void setCode_body(String code_body) {
-        this.code_body = code_body;
-    }
-    public String getNotes() {
-        return notes;
-    }
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-    public Timestamp getCreated_at() {
-        return created_at;
-    }
-    public void setCreated_at(Timestamp created_at) {
-        this.created_at = created_at;
-    }
-
-    @Override
-    public String toString() {
-        return "Snippet{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", language='" + language + '\'' +
-                '}';
-    }
+    @JsonManagedReference
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(
+            name = "snippet_tags",
+            joinColumns = @JoinColumn(name = "snippet_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags = new HashSet<>();
 }
-
-

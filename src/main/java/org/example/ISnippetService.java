@@ -4,10 +4,10 @@ import java.util.List;
 
 public interface ISnippetService {
     Snippet createSnippet(Snippet snippet);
-    Snippet updateSnippet(Snippet snippet);
-    void deleteSnippet(Snippet snippet);
-    Snippet findById(int id);
+    Snippet updateSnippet(Snippet snippet, int id);
+    void deleteSnippet(int id);
+    Snippet findSnippetById(int id);
     List<Snippet> findAll();
-    List<Snippet> findByName(String name);
+    Snippet findSnippetByTitle(String name);
 
 }
