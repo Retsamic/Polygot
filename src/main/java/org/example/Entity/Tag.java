@@ -1,4 +1,4 @@
-package org.example.model;
+package org.example.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -16,7 +16,7 @@ import java.util.Set;
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @Column(unique = true)
     private String name;

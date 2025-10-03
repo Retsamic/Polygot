@@ -1,4 +1,4 @@
-package org.example.model;
+package org.example.Entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -17,7 +17,7 @@ import java.util.Set;
 public class Snippet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     private String title;
     private String language;
