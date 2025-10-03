@@ -37,14 +37,6 @@ public class SnippetEventHandler {
     }
 
     @HandleBeforeDelete
-    public void handleSnippetDelete(Snippet snippet) {
-        Snippet existingSnippet = snippetRepository.findSnippetByTitle(snippet.getTitle());
-        if(existingSnippet == null){
-            throw new IllegalArgumentException("Snippet does not exist");
-        }
-    }
-
-    @HandleBeforeDelete
     public void handleSnippetDeleteTags(Snippet snippet) {
         if(snippet.getTags() != null && !snippet.getTags().isEmpty()){
             throw new IllegalArgumentException("Snippet still has tags");

@@ -22,27 +22,9 @@ public class SnippetService {
         this.tagsDao = tagsDao;
     }
 
-
-    @Transactional
-    public void deleteSnippet(long id) {
-        if(!snippetRepository.existsById(id)){
-            throw new IllegalArgumentException("Snippet with id " + id + " does not exist");
-        }
-        snippetRepository.deleteById(id);
-    }
-
-
     public Snippet findSnippetById(long id) {
         return snippetRepository.findById(id).orElseThrow(() -> new RuntimeException("Snippet not found"));
 
-    }
-
-    public Page<Snippet> findAll(Pageable pageable) {
-        return snippetRepository.findAll(pageable);
-    }
-
-    public Snippet findSnippetByTitle(String name) {
-        return snippetRepository.findSnippetByTitle(name);
     }
 
     public List<Tag> getTagsForSnippet(long snippetId) {
@@ -56,4 +38,5 @@ public class SnippetService {
         snippet.getTags().add(tag);
         return snippetRepository.save(snippet);
     }
+
 }
