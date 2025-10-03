@@ -1,14 +1,17 @@
-package org.example;
+package org.example.service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.transaction.Transactional;
+import org.example.model.Snippet;
+import org.example.model.Tag;
+import org.example.repository.SnippetRepository;
+import org.example.repository.TagRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @Service
-public class SnippetService implements ISnippetService {
+public class SnippetService {
     private final SnippetRepository snippetDao;
     private final TagRepository tagsDao;
 
@@ -17,7 +20,6 @@ public class SnippetService implements ISnippetService {
         this.tagsDao = tagsDao;
     }
 
-    @Override
     public Snippet createSnippet(Snippet snippet) {
         if(snippetDao.findSnippetByTitle(snippet.getTitle()) != null){
             throw new IllegalArgumentException("Title already exists");
@@ -48,8 +50,7 @@ public class SnippetService implements ISnippetService {
         return snippetDao.findById(id).orElseThrow(() -> new RuntimeException("Snippet not found"));
 
     }
-
-    @Override
+    
     public List<Snippet> findAll() {
         return snippetDao.findAll();
     }

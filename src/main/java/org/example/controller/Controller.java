@@ -1,5 +1,9 @@
-package org.example;
+package org.example.controller;
 
+import org.example.model.Snippet;
+import org.example.service.SnippetService;
+import org.example.model.Tag;
+import org.example.service.TagService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
